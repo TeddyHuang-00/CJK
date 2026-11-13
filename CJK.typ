@@ -1,12 +1,13 @@
 #import "@preview/booktabs:0.0.4": *
 #import "@preview/easy-pinyin:0.1.0": pinyin, zhuyin
+#import "@preview/tiaoma:0.4.0": qrcode
 #show: booktabs-default-table-style
 
 #let section = counter("section")
 #let section-name = ("1": "Chinese", "2": "Japanese", "3": "Korean")
 #set page(
   paper: "us-letter",
-  margin: 1.1cm,
+  margin: 1cm,
   flipped: true,
   numbering: "1 / 1",
   header: context {
@@ -16,7 +17,15 @@
     let has-h1 = page-num in query(heading.where(level: 1)).map(h => h.location().page())
     let name = section-name.at(str(section.at(here()).first()), default: "")
     // hide 占位,保证 header 高度不变、不引起重新分页
-    if has-h1 { hide(name) } else {
+    if has-h1 {
+      [
+        #h(1fr)
+        #counter(page).display(
+          "1 / 1",
+          both: true,
+        )
+      ]
+    } else {
       [
         #h(1fr)
         #name
@@ -28,9 +37,20 @@
       ]
     }
   },
-  footer: place(bottom + right, dy: -5em)[
-    #set align(center + horizon)
-    #box(height: 6em, width: 6em, stroke: 1pt + black)[QR\ Code]
+  footer: place(bottom + right, dy: -3em)[
+    #set align(center + bottom)
+    #box(width: 6em)[
+      #text(size: 0.8em)[Get a copy of this]\
+      #box(
+        width: 6em,
+        height: 6em,
+        align(center + horizon, qrcode(
+          "https://teddyhuang.is-a.dev/CJK/CJK.pdf",
+          width: 6em,
+          height: 6em,
+        )),
+      )
+    ]
   ],
 )
 #set text(font: ("Maple Mono NF", "D2Coding ligature"))
@@ -42,6 +62,13 @@
 }
 
 #let zy = zhuyin.with(delimiter: "|", spacing: 0.1em)
+#let invalid = box(height: 1em, width: 1em, fill: gray)
+
+#let blk(title, tbl) = block(breakable: false)[
+  #title
+
+  #tbl
+]
 
 = Chinese #zy[拼|音][pi1n|yi1n]
 
@@ -203,7 +230,7 @@
               let spell = i + v
               let actual = pinyin-spelling.at(spell, default: spell)
               if actual == "" {
-                return box(fill: gray, width: 1em, height: 1em)
+                return invalid
               }
               if actual != spell {
                 highlight[#actual]
@@ -217,23 +244,26 @@
   bottomrule(),
 )
 
-== Pinyin = Syllable + Tone
 
-#table(
-  align: center + horizon,
-  columns: 6,
-  toprule(),
-  table.header(
-    table.cell(rowspan: 2)[Example],
-    table.vline(),
-    table.cell(colspan: 5)[*Tones* #zy[声|调][she1ng|dia4o]],
-    cmidrule(start: 1, end: 100),
-    sym.macron, sym.acute, sym.caron, sym.grave, $emptyset$,
-  ),
-  midrule(),
+#blk[
+  == Pinyin = Syllable + Tone
+][
+  #table(
+    align: center + horizon,
+    columns: 6,
+    toprule(),
+    table.header(
+      table.cell(rowspan: 2)[Example],
+      table.vline(),
+      table.cell(colspan: 5)[*Tones* #zy[声|调][she1ng|dia4o]],
+      cmidrule(start: 1, end: 100),
+      sym.macron, sym.acute, sym.caron, sym.grave, $emptyset$,
+    ),
+    midrule(),
 
-  [ma], zy[妈][ma1], zy[麻][ma2], zy[马][ma3], zy[骂][ma4], zy[吗][ma],
-)
+    [ma], zy[妈][ma1], zy[麻][ma2], zy[马][ma3], zy[骂][ma4], zy[吗][ma],
+  )
+]
 
 = Japanese #zy[平|仮|名][ひら|が|な] / #zy[片|仮|名][カタ|カ|ナ]
 
@@ -242,9 +272,9 @@
 }
 
 #columns(2)[
-  #block(breakable: false)[
+  #blk[
     == 50 syllables #zy[五|十|音][ご|じゅう|おん]
-
+  ][
     #table(
       align: center + horizon,
       columns: 6,
@@ -313,9 +343,9 @@
       // や行与わ行缺 i e u 三段,与拼音表一样用灰块表示该位无假名
       [y],
       jruby(("や", "ヤ"), "ya"),
-      box(fill: gray, width: 1em, height: 1em),
+      invalid,
       jruby(("ゆ", "ユ"), "yu"),
-      box(fill: gray, width: 1em, height: 1em),
+      invalid,
       jruby(("よ", "ヨ"), "yo"),
 
       [r],
@@ -327,9 +357,9 @@
 
       [w],
       jruby(("わ", "ワ"), "wa"),
-      box(fill: gray, width: 1em, height: 1em),
-      box(fill: gray, width: 1em, height: 1em),
-      box(fill: gray, width: 1em, height: 1em),
+      invalid,
+      invalid,
+      invalid,
       jruby(("を", "ヲ"), "wo"),
 
       // ん 不属任何一段,单独成行
@@ -340,9 +370,9 @@
     )
   ]
 
-  #block(breakable: false)[
+  #blk[
     == Voiced #zy[濁|音][だく|おん] (゛) \ Semi-voiced #zy[半|濁|音][はん|だく|おん] (゜)
-
+  ][
     #table(
       align: center + horizon,
       columns: 6,
@@ -405,11 +435,10 @@
 #pagebreak(weak: true)
 
 #columns(2)[
-  #block(breakable: false)[
+  #blk[
     == Contracted #zy[拗|音][よう|おん]
-
     i-row + small ゃ/ゅ/ょ = "merge two syllables"
-
+  ][
     #table(
       align: center + horizon,
       columns: 4,
@@ -453,11 +482,10 @@
     )
   ]
 
-  #block(breakable: false)[
+  #blk[
     == Double consonant #zy[促|音][そく|おん]
-
     っ/ッ double the next consonant = "short pause"
-
+  ][
     #table(
       align: center + horizon,
       columns: 2,
@@ -474,11 +502,10 @@
     )
   ]
 
-  #block(breakable: false)[
+  #blk[
     == Long vowel #zy[長|音][ちょう|おん]
-
     hold the vowel for two beats
-
+  ][
     #table(
       align: center + horizon,
       columns: 3,
@@ -502,18 +529,17 @@
   ]
 ]
 
-#pagebreak(weak: true)
-
 = Korean #zy[한|글][han|geul]
 
 // 字母:上方为初声读音,下方灰色为收音读音
 #let jamo(l, ini, fin) = [#zy[#l][#ini]\ #text(size: 0.65em)[#fin]]
-#let empty = box(fill: gray, width: 1em, height: 1em)
+#let empty = invalid
 
-#columns(2)[
-  #block(breakable: false)[
+#grid(columns: (2fr, 1fr))[
+  #blk[
     == Consonants #zy[자|음][ja|eum]
-
+    #text(size: 0.9em)[Top: as initial; bottom: as final]
+  ][
     #table(
       align: center + horizon,
       columns: 6,
@@ -527,30 +553,30 @@
       ),
       midrule(),
 
-      [*Velar*\ #zy[아|음][a|eum]],
+      [*Velar* #zy[아|음][a|eum]],
       jamo("ㄱ", "g", "k"), jamo("ㄲ", "kk", "k"), jamo("ㅋ", "k", "k"), empty, empty,
 
-      [*Alveolar*\ #zy[설|음][seol|eum]],
+      [*Alveolar* #zy[설|음][seol|eum]],
       jamo("ㄷ", "d", "t"), jamo("ㄸ", "tt", "∅"), jamo("ㅌ", "t", "t"), jamo("ㄴ", "n", "n"), jamo("ㄹ", "r", "l"),
 
-      [*Bilabial*\ #zy[순|음][sun|eum]],
+      [*Bilabial* #zy[순|음][sun|eum]],
       jamo("ㅂ", "b", "p"), jamo("ㅃ", "pp", "∅"), jamo("ㅍ", "p", "p"), jamo("ㅁ", "m", "m"), empty,
 
-      table.cell(rowspan: 2)[*Dental*\ #zy[치|음][chi|eum]],
+      table.cell(rowspan: 2)[*Dental* #zy[치|음][chi|eum]],
       jamo("ㅅ", "s", "t"), jamo("ㅆ", "ss", "t"), empty, empty, empty,
 
       jamo("ㅈ", "j", "t"), jamo("ㅉ", "jj", "∅"), jamo("ㅊ", "ch", "t"), empty, empty,
 
-      [*Glottal*\ #zy[후|음][hu|eum]],
+      [*Glottal* #zy[후|음][hu|eum]],
       jamo("ㅇ", "∅", "ng"), empty, jamo("ㅎ", "h", "t"), empty, empty,
 
       bottomrule(),
     )
   ]
-
-  #block(breakable: false)[
+][
+  #blk[
     == Vowels #zy[모|음][mo|eum]
-
+  ][
     #table(
       align: center + horizon,
       columns: 3,
@@ -567,22 +593,19 @@
       empty, bottomrule(),
     )
   ]
-
 ]
 
-#block(breakable: false)[
+#blk[
   == Syllable blocks #zy[음|절][eum|jeol]
-
-  Character = Syllable = [Initial +] Vowel [+ Final]
-
-  Each character is read left-to-right, top-to-bottom
-
+  Character = Syllable = Initial + Vowel [+ Final]\
+  #text(size: 0.9em)[Reading: left-to-right, top-to-bottom]
+][
   #table(
     align: center + horizon,
     columns: 9,
     toprule(),
     table.header(
-      [], zy[가][ga], zy[고][go], zy[아][a], zy[강][gang], zy[곰][gom], zy[과][gwa], zy[왜][wae], zy[닭][dak]
+      [Example], zy[가][ga], zy[고][go], zy[아][a], zy[강][gang], zy[곰][gom], zy[과][gwa], zy[왜][wae], zy[닭][dak]
     ),
     midrule(),
 
