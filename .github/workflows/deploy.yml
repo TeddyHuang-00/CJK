@@ -48,7 +48,7 @@ jobs:
         run: just font
 
       - name: Compile Document
-        run: typst compile --font-path .cache/fonts CJK.typ
+        run: just build
 
       - name: Configure Pages
         uses: actions/configure-pages@v6
@@ -56,7 +56,7 @@ jobs:
       - name: Upload Files
         uses: actions/upload-pages-artifact@v5
         with:
-          path: "CJK.pdf"
+          path: "output"
 
       - name: Deploy GitHub Pages
         id: deployment

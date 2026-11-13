@@ -12,3 +12,7 @@ FONT_CACHE_EXISTS := path_exists(FONT_CACHE_FILE)
 
 @font-version:
     echo "font-version={{ FONT_VERSION }}"
+
+build: font
+    mkdir -p output
+    typst compile --font-path .cache/fonts CJK.typ output/CJK.pdf

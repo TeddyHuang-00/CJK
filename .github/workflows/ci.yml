@@ -28,4 +28,4 @@ jobs:
           path: .cache/fonts
           key: cache-font-${{ steps.font-version.outputs.font-version }}
       - run: just font
-      - run: typst compile --font-path .cache/fonts CJK.typ
+      - run: just build
