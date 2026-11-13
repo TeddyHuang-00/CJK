@@ -1,0 +1,30 @@
+name: CI tests
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+  merge_group:
+  workflow_call:
+
+jobs:
+  build:
+    name: Build Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: typst-community/setup-typst@v5
+      - id: font-version
+        run: just font-version >> $GITHUB_OUTPUT
+      - uses: actions/cache@v6
+        with:
+          path: .cache/fonts
+          key: cache-font-${{ steps.font-version.outputs.font-version }}
+      - run: just font
+      - run: typst compile --font-path .cache/fonts CJK.typ

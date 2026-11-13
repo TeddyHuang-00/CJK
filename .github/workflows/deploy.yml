@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  actions: read
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".github/renovate.json"
+  workflow_dispatch:
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-n-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Typst
+        uses: typst-community/setup-typst@v5
+
+      - name: Get font version
+        id: font-version
+        run: just font-version >> $GITHUB_OUTPUT
+
+      - name: Cache Font
+        uses: actions/cache@v6
+        with:
+          path: .cache/fonts
+          key: cache-font-${{ steps.font-version.outputs.font-version }}
+
+      - name: Prepare Font
+        run: just font
+
+      - name: Compile Document
+        run: typst compile --font-path .cache/fonts CJK.typ
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload Files
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: "CJK.pdf"
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
