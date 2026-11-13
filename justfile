@@ -9,15 +9,19 @@ FONT_CJ_EXISTS := path_exists(FONT_CJ_FILE)
 FONT_K_EXISTS := path_exists(FONT_K_FILE)
 FONT_VERSION := FONT_CJ_VERSION + "|" + FONT_K_VERSION
 
-@font:
-    mkdir -p {{ FONT_CACHE_DIR }}
+_maple_font:
     {{ FONT_CJ_EXISTS }} || \
         (wget https://github.com/subframe7536/maple-font/releases/download/v{{ FONT_CJ_VERSION }}/MapleMono-NF-CN-unhinted.zip -O {{ FONT_CJ_FILE }} && \
         unzip -o {{ FONT_CJ_FILE }} -d {{ FONT_CACHE_DIR }})
+
+_d2coding_font:
     {{ FONT_K_EXISTS }} || \
         (wget https://github.com/naver/d2-coding-font/releases/download/VER{{ FONT_K_VERSION }}/D2Coding-Ver{{ FONT_K_VERSION }}-{{ FONT_K_DATE }}.zip -O {{ FONT_K_FILE }} && \
         unzip -o {{ FONT_K_FILE }} -d {{ FONT_CACHE_DIR }} && \
         cp {{ FONT_CACHE_DIR }}/D2CodingLigature/* {{ FONT_CACHE_DIR }})
+
+@font: && _maple_font _d2coding_font
+    mkdir -p {{ FONT_CACHE_DIR }}
 
 @font-version:
     echo "font-version={{ FONT_VERSION }}"
