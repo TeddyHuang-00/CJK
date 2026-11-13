@@ -33,7 +33,7 @@
     #box(height: 6em, width: 6em, stroke: 1pt + black)[QR\ Code]
   ],
 )
-#set text(font: "Maple Mono NF")
+#set text(font: ("Maple Mono NF", "D2Coding ligature"))
 #set align(center)
 #show heading.where(level: 1): it => {
   pagebreak(weak: true)
