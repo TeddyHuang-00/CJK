@@ -243,6 +243,13 @@
   bottomrule(),
 )
 
+#box[
+  #align(horizon)[
+    #box(width: 1em, height: 1em, clip: true, highlight("    ")): Same pronunciation, altered spelling;
+    #box(width: 1em, height: 1em, stroke: 1pt + black): Same spelling, altered pronunciation;
+    #invalid: Invalid
+  ]
+]
 
 #blk[
   == Pinyin = Syllable + Tone
