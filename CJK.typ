@@ -263,7 +263,7 @@
       table.vline(),
       table.cell(colspan: 5)[*Tones* #zy[声|调][she1ng|dia4o]],
       cmidrule(start: 1, end: 100),
-      sym.macron, sym.acute, sym.caron, sym.grave, $emptyset$,
+      [#sym.macron\ 1], [#sym.acute\ 2], [#sym.caron\ 3], [#sym.grave\ 4], [$emptyset$\ neutral],
     ),
     midrule(),
 
@@ -538,8 +538,7 @@
 = Korean #zy[한|글][han|geul]
 
 // 字母:上方为初声读音,下方灰色为收音读音
-#let jamo(l, ini, fin) = [#zy[#l][#ini]\ #text(size: 0.65em)[#fin]]
-#let empty = invalid
+#let jamo(l, ini, fin) = [#zy[#l][#ini]\ #pad(top: -0.8em, text(size: 0.65em)[#fin])]
 
 #grid(columns: (2fr, 1fr))[
   #blk[
@@ -560,21 +559,21 @@
       midrule(),
 
       [*Velar* #zy[아|음][a|eum]],
-      jamo("ㄱ", "g", "k"), jamo("ㄲ", "kk", "k"), jamo("ㅋ", "k", "k"), empty, empty,
+      jamo("ㄱ", "g", "k"), jamo("ㄲ", "kk", "k"), jamo("ㅋ", "k", "k"), invalid, invalid,
 
       [*Alveolar* #zy[설|음][seol|eum]],
       jamo("ㄷ", "d", "t"), jamo("ㄸ", "tt", "∅"), jamo("ㅌ", "t", "t"), jamo("ㄴ", "n", "n"), jamo("ㄹ", "r", "l"),
 
       [*Bilabial* #zy[순|음][sun|eum]],
-      jamo("ㅂ", "b", "p"), jamo("ㅃ", "pp", "∅"), jamo("ㅍ", "p", "p"), jamo("ㅁ", "m", "m"), empty,
+      jamo("ㅂ", "b", "p"), jamo("ㅃ", "pp", "∅"), jamo("ㅍ", "p", "p"), jamo("ㅁ", "m", "m"), invalid,
 
       table.cell(rowspan: 2)[*Dental* #zy[치|음][chi|eum]],
-      jamo("ㅅ", "s", "t"), jamo("ㅆ", "ss", "t"), empty, empty, empty,
+      jamo("ㅅ", "s", "t"), jamo("ㅆ", "ss", "t"), invalid, invalid, invalid,
 
-      jamo("ㅈ", "j", "t"), jamo("ㅉ", "jj", "∅"), jamo("ㅊ", "ch", "t"), empty, empty,
+      jamo("ㅈ", "j", "t"), jamo("ㅉ", "jj", "∅"), jamo("ㅊ", "ch", "t"), invalid, invalid,
 
       [*Glottal* #zy[후|음][hu|eum]],
-      jamo("ㅇ", "∅", "ng"), empty, jamo("ㅎ", "h", "t"), empty, empty,
+      jamo("ㅇ", "∅", "ng"), invalid, jamo("ㅎ", "h", "t"), invalid, invalid,
 
       bottomrule(),
     )
@@ -588,15 +587,18 @@
       columns: 3,
       toprule(),
       table.header([*Base*], [*+i/y*], [*+u/w*]),
-      midrule(), zy[ㅏ][a], zy[ㅑ][ya],
-      zy[ㅘ][wa], zy[ㅓ][eo], zy[ㅕ][yeo],
-      zy[ㅝ][wo], zy[ㅗ][o], zy[ㅛ][yo],
-      zy[ㅚ][oe], zy[ㅜ][u], zy[ㅠ][yu],
-      zy[ㅟ][wi], zy[ㅐ][ae], zy[ㅒ][yae],
-      zy[ㅙ][wae], zy[ㅔ][e], zy[ㅖ][ye],
-      zy[ㅞ][we], zy[ㅡ][eu], zy[ㅢ][ui],
-      empty, zy[ㅣ][i], empty,
-      empty, bottomrule(),
+      midrule(),
+
+      zy[ㅏ][a], zy[ㅑ][ya], zy[ㅘ][wa],
+      zy[ㅓ][eo], zy[ㅕ][yeo], zy[ㅝ][wo],
+      zy[ㅗ][o], zy[ㅛ][yo], zy[ㅚ][oe],
+      zy[ㅜ][u], zy[ㅠ][yu], zy[ㅟ][wi],
+      zy[ㅐ][ae], zy[ㅒ][yae], zy[ㅙ][wae],
+      zy[ㅔ][e], zy[ㅖ][ye], zy[ㅞ][we],
+      zy[ㅡ][eu], zy[ㅢ][ui], invalid,
+      zy[ㅣ][i], invalid, invalid,
+
+      bottomrule(),
     )
   ]
 ]
