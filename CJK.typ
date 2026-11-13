@@ -9,7 +9,6 @@
   paper: "us-letter",
   margin: 1cm,
   flipped: true,
-  numbering: "1 / 1",
   header: context {
     set text(1em)
     let page-num = here().page()
@@ -17,29 +16,25 @@
     let has-h1 = page-num in query(heading.where(level: 1)).map(h => h.location().page())
     let name = section-name.at(str(section.at(here()).first()), default: "")
     // hide 占位,保证 header 高度不变、不引起重新分页
-    if has-h1 {
-      [
-        #h(1fr)
-        #counter(page).display(
-          "1 / 1",
-          both: true,
-        )
-      ]
-    } else {
-      [
-        #h(1fr)
-        #name
-        #h(1fr)
-        #counter(page).display(
-          "1 / 1",
-          both: true,
-        )
-      ]
-    }
+    if has-h1 [
+      #h(1fr)
+      #counter(page).display(
+        "1 / 1",
+        both: true,
+      )
+    ] else [
+      #h(1fr)
+      #name
+      #h(1fr)
+      #counter(page).display(
+        "1 / 1",
+        both: true,
+      )
+    ]
   },
-  footer: place(bottom + right, dy: -3em)[
-    #set align(center + bottom)
-    #box(width: 6em)[
+  footer: place(bottom + left, dx: -1em, dy: -4em, {
+    set align(center)
+    box(width: 6em)[
       #text(size: 0.8em)[Get a copy of this]\
       #box(
         width: 6em,
@@ -51,7 +46,7 @@
         )),
       )
     ]
-  ],
+  }),
 )
 #set text(font: ("Maple Mono NF", "D2Coding ligature"))
 #set align(center)
@@ -200,6 +195,7 @@
         + qch.map(v => (v, "y" + ("i": "i", "in": "in", "ing": "ing", "iu": "ou").at(v, default: v.slice(1))))
         // j q x 后的 ü 组写作 u
         + zkh.map(v => ("j", "q", "x").map(i => (i + v, i + v.replace("ü", "u")))).fold((), (a, b) => a + b)
+        + ("zhi", "chi", "shi", "ri", "zi", "ci", "si").map(s => (s, s))
     ).to-dict()
 )
 
@@ -217,7 +213,7 @@
     table.vline(),
     table.cell(colspan: 22)[*Initials* #zy[声|母][she1ng|mu3]],
     cmidrule(start: 1, end: 100),
-    ..pinyin-initials.map(i => [#i]),
+    ..pinyin-initials.map(i => if i != "" [#i] else [$emptyset$]),
   ),
   midrule(),
 
@@ -228,11 +224,14 @@
           + pinyin-initials.map(
             i => {
               let spell = i + v
-              let actual = pinyin-spelling.at(spell, default: spell)
+              let actual = pinyin-spelling.at(spell, default: none)
               if actual == "" {
                 return invalid
               }
-              if actual != spell {
+              if actual == spell {
+                return box(stroke: 1pt + black, inset: (x: 1pt, y: 2pt))[#actual]
+              }
+              if actual != none {
                 highlight[#actual]
               }
             },
