@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - uses: extractions/setup-just@v4
       - uses: typst-community/setup-typst@v5
       - id: font-version
         run: just font-version >> $GITHUB_OUTPUT

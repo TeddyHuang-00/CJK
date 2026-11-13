@@ -28,6 +28,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Setup Just
+        uses: extractions/setup-just@v4
+
       - name: Setup Typst
         uses: typst-community/setup-typst@v5
 
